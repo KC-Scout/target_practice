@@ -2,12 +2,19 @@ import pygame
 import pygame.sprite
 import sys
 
-screen = pygame.display.set_mode((1200, 800))
+screen_width = 1200
+screen_height = 800
+screen = pygame.display.set_mode((screen_width, screen_height))
 screen_rect = screen.get_rect()
 
 image = pygame.image.load('ship.bmp')
 image_rect = image.get_rect()
 image_rect.midleft = screen_rect.midleft
+
+target_rect = pygame.Rect(400, 0, 100, 100)
+target_color = (255, 0, 0)
+target_rect.midright = screen_rect.midright
+target_direction = 1
 
 while True:
     
@@ -17,11 +24,25 @@ while True:
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_q:
                 sys.exit()
+                
+            # Move the ship up and down 
+            elif event.key == pygame.K_UP:
+                image_rect.y -= 25
+            elif event.key == pygame.K_DOWN:
+                image_rect.y += 25
+                
         elif event.type == pygame.QUIT:
-            sys.exit()
+                sys.exit()
+                
+    target_rect.y += target_direction
+    if target_rect.bottom >= screen_height:
+        target_direction *= -1
+    elif target_rect.top <= 0:
+        target_direction *= -1
+        
     
  
     
-    
+    screen.fill(target_color, target_rect)
     screen.blit(image, image_rect)
     pygame.display.flip()
