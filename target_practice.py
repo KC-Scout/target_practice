@@ -17,12 +17,9 @@ target_rect.midright = screen_rect.midright
 target_direction = 1
 
 bullet_rect = pygame.Rect(0, 0, 15, 3)
-bullet_rect.midright = image_rect.midright
 bullet_color = (0, 0, 255)
 fire_bullet = False
 
-
-class Bullet():
     
 while True:
     
@@ -37,10 +34,11 @@ while True:
             elif event.key == pygame.K_UP:
                 image_rect.y -= 45
             elif event.key == pygame.K_DOWN:
-                image_rect.y += 45
-                
+                image_rect.y += 45                
             # Active bullet fired 
-            if event.key == pygame.K_SPACE:
+            elif event.key == pygame.K_SPACE:
+                bullet_rect.centery = image_rect.centery
+                bullet_rect.centerx = image_rect.centerx
                 fire_bullet = True
                 
         elif event.type == pygame.QUIT:
@@ -58,9 +56,7 @@ while True:
     elif target_rect.top <= 0:
         target_direction *= -1
         
-    
- 
-    # ~ screen.fill(bullet_color, bullet_rect)
+        
     screen.fill(target_color, target_rect)
     screen.blit(image, image_rect)
     pygame.display.flip()
