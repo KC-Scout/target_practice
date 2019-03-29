@@ -16,6 +16,12 @@ target_color = (255, 0, 0)
 target_rect.midright = screen_rect.midright
 target_direction = 1
 
+bullet_rect = pygame.Rect(0, 0, 15, 3)
+bullet_rect.center = image_rect.midright
+bullet_rect.right = image_rect.right
+bullet_color = (0, 0, 255)
+fire_bullet = False
+
 while True:
     
     screen.fill((0, 255, 0))
@@ -27,13 +33,23 @@ while True:
                 
             # Move the ship up and down 
             elif event.key == pygame.K_UP:
-                image_rect.y -= 25
+                image_rect.y -= 45
             elif event.key == pygame.K_DOWN:
-                image_rect.y += 25
+                image_rect.y += 45
+                
+            # Active bullet fired 
+            if event.key == pygame.K_SPACE:
+                fire_bullet = True
                 
         elif event.type == pygame.QUIT:
                 sys.exit()
                 
+    # Move the bullet across the screen if fired
+    if fire_bullet:
+        screen.fill(bullet_color, bullet_rect)
+        bullet_rect.x += 1
+    
+    # Move the Target up and down
     target_rect.y += target_direction
     if target_rect.bottom >= screen_height:
         target_direction *= -1
@@ -42,7 +58,7 @@ while True:
         
     
  
-    
+    # ~ screen.fill(bullet_color, bullet_rect)
     screen.fill(target_color, target_rect)
     screen.blit(image, image_rect)
     pygame.display.flip()
