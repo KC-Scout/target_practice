@@ -17,11 +17,13 @@ target_rect.midright = screen_rect.midright
 target_direction = 1
 
 bullet_rect = pygame.Rect(0, 0, 15, 3)
-bullet_rect.center = image_rect.midright
-bullet_rect.right = image_rect.right
+bullet_rect.midright = image_rect.midright
 bullet_color = (0, 0, 255)
 fire_bullet = False
 
+
+class Bullet():
+    
 while True:
     
     screen.fill((0, 255, 0))
