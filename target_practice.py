@@ -1,5 +1,6 @@
 import pygame
-import pygame.sprite
+from pygame.sprite import Sprite
+from pygame.sprite import Group
 import sys
 
 screen_width = 1200
@@ -18,14 +19,27 @@ target_color = (255, 0, 0)
 target_rect.midright = screen_rect.midright
 target_direction = 1
 
-bullet_rect = pygame.Rect(0, 0, 15, 3)
-bullet_color = (0, 0, 255)
-fire_bullet = False
+class Bullet (Sprite):
+    """Bullet class to define bullets"""
+    def __init__(self, image_rect):
+        super(Bullet, self).__init__()
+        self.rect = pygame.Rect(0, 0, 15, 3)
+        self.color = (0, 0, 255)
+        self.rect.midright = image_rect.midright
+        
+    def update(self):
+        self.rect.x += 3
+        
+bullets = Group()        
+        
+
+
 
     
 while True:
     
     screen.fill((0, 255, 0))
+    fire_bullet = False
     
     for event in pygame.event.get():
         if event.type == pygame.KEYDOWN:
@@ -40,8 +54,7 @@ while True:
                 
             # Active bullet fired 
             elif event.key == pygame.K_SPACE:
-                bullet_rect.midright = image_rect.midright
-                fire_bullet = True
+                fire_bullet = True  
         
         elif event.type == pygame.KEYUP:
             if event.key == pygame.K_UP:
@@ -58,10 +71,11 @@ while True:
     elif image_move_down and image_rect.bottom < screen_rect.bottom:
         image_rect.y += 2
             
-    # Move the bullet across the screen if fired
+    # If bullet fired, add to bullets group
     if fire_bullet:
-        screen.fill(bullet_color, bullet_rect)
-        bullet_rect.x += 2
+        new_bullet = Bullet(image_rect)
+        bullets.add(new_bullet)
+    bullets.update()
     
     # Move the Target up and down
     target_rect.y += target_direction
@@ -70,7 +84,9 @@ while True:
     elif target_rect.top <= 0:
         target_direction *= -1
         
-        
+    for x in bullets:
+        screen.fill(x.color, x.rect)
+      
     screen.fill(target_color, target_rect)
     screen.blit(image, image_rect)
     pygame.display.flip()
