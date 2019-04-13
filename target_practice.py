@@ -14,10 +14,6 @@ image_rect.midleft = screen_rect.midleft
 image_move_down = False
 image_move_up = False
 
-# ~ target_rect = pygame.Rect(400, 0, 100, 100)
-# ~ target_color = (255, 0, 0)
-# ~ target_rect.midright = screen_rect.midright
-# ~ target_direction = 1
 
 class Bullet (Sprite):
     """Bullet class to define bullets"""
@@ -40,13 +36,29 @@ class Target(Sprite):
         self.rect.midright = screen_rect.midright
         self.direction = 1
         
+class Button():
+    """Make a play button to start the game"""
+    def __init__(self, screen):
+        self.rect = pygame.Rect(0, 0, 200, 50)
+        self.color = (0, 0, 255)
+        self.rect.center = screen_rect.center
+        
+    def draw_button(self):
+        screen.fill(self.color, self.rect)
+
+game_active = False    
+button = Button(screen)    
 bullets = Group()                
 target = Target(screen_rect)
 missed_targets = 0
+
 while True:
     
     screen.fill((0, 255, 0))
     fire_bullet = False
+    
+    if game_active == False:
+        button.draw_button()
     
     for event in pygame.event.get():
         if event.type == pygame.KEYDOWN:
@@ -69,41 +81,48 @@ while True:
             if event.key == pygame.K_DOWN:
                 image_move_down = False
         
+        elif event.type == pygame.MOUSEBUTTONDOWN:
+            mouse_position = pygame.mouse.get_pos()
+            if button.rect.collidepoint(mouse_position):
+                game_active = True
         elif event.type == pygame.QUIT:
                 sys.exit()
+            
+    if game_active:
+        # Move the image up and down
+        if image_move_up and image_rect.top > screen_rect.top:
+            image_rect.y -= 2
+        elif image_move_down and image_rect.bottom < screen_rect.bottom:
+            image_rect.y += 2
                 
-    # Move the image up and down
-    if image_move_up and image_rect.top > screen_rect.top:
-        image_rect.y -= 2
-    elif image_move_down and image_rect.bottom < screen_rect.bottom:
-        image_rect.y += 2
-            
-    # If bullet fired, add to bullets group
-    if fire_bullet:
-        new_bullet = Bullet(image_rect)
-        bullets.add(new_bullet)
-    bullets.update()
-    
-    # Move the Target up and down
-    target.rect.y += target.direction
-    if target.rect.bottom >= screen_height:
-        target.direction *= -1
-    elif target.rect.top <= 0:
-        target.direction *= -1
-    
-    
-    for x in bullets:
-        screen.fill(x.color, x.rect)
-        if pygame.sprite.collide_rect(x, target):
-            bullets.remove(x)
-        elif x.rect.x > screen_rect.right:
-            missed_targets += 1
-            bullets.remove(x)
-            
-    if missed_targets > 3:
-        print("Sorry! you missed more than three times!")
-        sys.exit()
+        # If bullet fired, add to bullets group
+        if fire_bullet:
+            new_bullet = Bullet(image_rect)
+            bullets.add(new_bullet)
+        bullets.update()
         
+        # Move the Target up and down
+        target.rect.y += target.direction
+        if target.rect.bottom >= screen_height:
+            target.direction *= -1
+        elif target.rect.top <= 0:
+            target.direction *= -1
+        
+        
+        for x in bullets:
+            screen.fill(x.color, x.rect)
+            if pygame.sprite.collide_rect(x, target):
+                bullets.remove(x)
+            elif x.rect.x > screen_rect.right:
+                missed_targets += 1
+                bullets.remove(x)
+                
+        if missed_targets > 3:
+            print("Sorry! you missed more than three times!")
+            sys.exit()
+        
+    
+    
     screen.fill(target.color, target.rect)
     screen.blit(image, image_rect)
     pygame.display.flip()
