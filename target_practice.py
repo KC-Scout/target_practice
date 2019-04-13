@@ -14,10 +14,10 @@ image_rect.midleft = screen_rect.midleft
 image_move_down = False
 image_move_up = False
 
-target_rect = pygame.Rect(400, 0, 100, 100)
-target_color = (255, 0, 0)
-target_rect.midright = screen_rect.midright
-target_direction = 1
+# ~ target_rect = pygame.Rect(400, 0, 100, 100)
+# ~ target_color = (255, 0, 0)
+# ~ target_rect.midright = screen_rect.midright
+# ~ target_direction = 1
 
 class Bullet (Sprite):
     """Bullet class to define bullets"""
@@ -29,13 +29,20 @@ class Bullet (Sprite):
         
     def update(self):
         self.rect.x += 3
+ 
+ 
+class Target(Sprite):
+    """Target class to define target"""
+    def __init__(self, screen_rect):
+        super(Target, self).__init__()
+        self.rect = pygame.Rect(400, 0, 100, 100)
+        self.color = (255, 0, 0)
+        self.rect.midright = screen_rect.midright
+        self.direction = 1
         
-bullets = Group()        
-        
-
-
-
-    
+bullets = Group()                
+target = Target(screen_rect)
+missed_targets = 0
 while True:
     
     screen.fill((0, 255, 0))
@@ -78,15 +85,25 @@ while True:
     bullets.update()
     
     # Move the Target up and down
-    target_rect.y += target_direction
-    if target_rect.bottom >= screen_height:
-        target_direction *= -1
-    elif target_rect.top <= 0:
-        target_direction *= -1
-        
+    target.rect.y += target.direction
+    if target.rect.bottom >= screen_height:
+        target.direction *= -1
+    elif target.rect.top <= 0:
+        target.direction *= -1
+    
+    
     for x in bullets:
         screen.fill(x.color, x.rect)
-      
-    screen.fill(target_color, target_rect)
+        if pygame.sprite.collide_rect(x, target):
+            bullets.remove(x)
+        elif x.rect.x > screen_rect.right:
+            missed_targets += 1
+            bullets.remove(x)
+            
+    if missed_targets > 3:
+        print("Sorry! you missed more than three times!")
+        sys.exit()
+        
+    screen.fill(target.color, target.rect)
     screen.blit(image, image_rect)
     pygame.display.flip()
