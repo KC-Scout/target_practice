@@ -2,6 +2,8 @@ import pygame
 from pygame.sprite import Sprite
 from pygame.sprite import Group
 import sys
+import pygame.font
+pygame.font.init()
 
 screen_width = 1200
 screen_height = 800
@@ -38,16 +40,26 @@ class Target(Sprite):
         
 class Button():
     """Make a play button to start the game"""
-    def __init__(self, screen):
+    def __init__(self, screen, msg):
         self.rect = pygame.Rect(0, 0, 200, 50)
         self.color = (0, 0, 255)
         self.rect.center = screen_rect.center
+        self.font = pygame.font.SysFont(None, 42)
+        self.prep_msg(msg)
+        
+        
+    def prep_msg(self, msg):
+        self.msg_image = self.font.render(msg, True, (255, 0, 0,), (0,0,255))
+        self.msg_image_rect = self.msg_image.get_rect()
+        self.msg_image_rect.center = self.rect.center
         
     def draw_button(self):
         screen.fill(self.color, self.rect)
+        screen.blit(self.msg_image, self.msg_image_rect)
 
+msg = "PLAY"
 game_active = False    
-button = Button(screen)    
+button = Button(screen, msg)    
 bullets = Group()                
 target = Target(screen_rect)
 missed_targets = 0
@@ -117,6 +129,8 @@ while True:
                 missed_targets += 1
                 bullets.remove(x)
                 
+        # Reset game active to return button to start screen, reset 
+        # number of missed targets, and empty out bullet groups.
         if missed_targets > 3:
             game_active = False
             missed_targets = 0
