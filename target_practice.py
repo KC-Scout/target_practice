@@ -118,8 +118,11 @@ while True:
                 bullets.remove(x)
                 
         if missed_targets > 3:
-            print("Sorry! you missed more than three times!")
-            sys.exit()
+            game_active = False
+            missed_targets = 0
+            target.rect.midright = screen_rect.midright
+            image_rect.midleft = screen_rect.midleft
+            bullets.empty()
         
     
     
