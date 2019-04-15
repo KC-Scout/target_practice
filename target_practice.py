@@ -36,7 +36,7 @@ class Target(Sprite):
         self.rect = pygame.Rect(400, 0, 100, 100)
         self.color = (255, 0, 0)
         self.rect.midright = screen_rect.midright
-        self.direction = 1
+        self.speed = 1
         
 class Button():
     """Make a play button to start the game"""
@@ -114,20 +114,21 @@ while True:
         bullets.update()
         
         # Move the Target up and down
-        target.rect.y += target.direction
+        target.rect.y += target.speed
         if target.rect.bottom >= screen_height:
-            target.direction *= -1
+            target.speed *= -1
         elif target.rect.top <= 0:
-            target.direction *= -1
+            target.speed *= -1
         
-        
-        for x in bullets:
-            screen.fill(x.color, x.rect)
-            if pygame.sprite.collide_rect(x, target):
-                bullets.remove(x)
-            elif x.rect.x > screen_rect.right:
+        # Remove bullets and speed up game
+        for bullet in bullets:
+            screen.fill(bullet.color, bullet.rect)
+            if pygame.sprite.collide_rect(bullet, target):
+                bullets.remove(bullet)
+                target.speed *= 2
+            elif bullet.rect.x > screen_rect.right:
                 missed_targets += 1
-                bullets.remove(x)
+                bullets.remove(bullet)
                 
         # Reset game active to return button to start screen, reset 
         # number of missed targets, and empty out bullet groups.
@@ -137,6 +138,7 @@ while True:
             target.rect.midright = screen_rect.midright
             image_rect.midleft = screen_rect.midleft
             bullets.empty()
+            target.speed = 1
         
     
     
